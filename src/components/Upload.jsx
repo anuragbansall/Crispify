@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { ImageContext } from "../context/ImageContext";
 
 function Upload() {
-  const inputRef = React.useRef(null);
+  const inputRef = useRef(null);
   const { setOriginalImage, setEnhancedImage } = useContext(ImageContext);
+  const [error, setError] = useState(null);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -18,14 +19,42 @@ function Upload() {
 
   const handleChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setOriginalImage(reader.result);
-        setEnhancedImage(null);
-      };
-      reader.readAsDataURL(file);
+
+    if (!file) return;
+
+    // Validate file type & size
+    if (!file.type.startsWith("image/")) {
+      setError("Invalid file type. Please upload an image.");
+      return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File is too large. Maximum size is 5MB.");
+      return;
+    }
+
+    setError(null); // Reset previous errors
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setOriginalImage(reader.result);
+      setEnhancedImage(null);
+
+      try {
+        // Simulate AI enhancement (Replace with actual API call)
+        const enhancedImage = reader.result;
+        setEnhancedImage(enhancedImage);
+      } catch (error) {
+        console.error("Error enhancing image:", error);
+        setEnhancedImage(null);
+      }
+    };
+
+    reader.onerror = () => {
+      setError("Error reading file. Please try again.");
+    };
+
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -51,6 +80,7 @@ function Upload() {
         aria-labelledby="file-upload"
         onChange={handleChange}
       />
+      {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
     </div>
   );
 }
