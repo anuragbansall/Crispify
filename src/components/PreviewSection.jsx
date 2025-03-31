@@ -22,7 +22,13 @@ function PreviewSection() {
             tag="enhanced"
           />
         </div>
-      ) : null}
+      ) : (
+        <div className="flex flex-col items-center justify-center mt-10 gap-5">
+          <p className="text-center text-sm md:text-lg text-zinc-500 dark:text-zinc-200">
+            No image uploaded yet. Please upload an image to see the preview.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
