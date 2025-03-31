@@ -1,5 +1,6 @@
 import React, { useContext, useRef, useState } from "react";
 import { ImageContext } from "../context/ImageContext";
+import axiosInstance from "../utils/axiosInstance";
 
 function Upload() {
   const inputRef = useRef(null);
@@ -22,7 +23,6 @@ function Upload() {
 
     if (!file) return;
 
-    // Validate file type & size
     if (!file.type.startsWith("image/")) {
       setError("Invalid file type. Please upload an image.");
       return;
@@ -32,29 +32,75 @@ function Upload() {
       return;
     }
 
-    setError(null); // Reset previous errors
+    setError(null);
 
-    const reader = new FileReader();
+    setOriginalImage(URL.createObjectURL(file));
 
-    reader.onload = () => {
-      setOriginalImage(reader.result);
-      setEnhancedImage(null);
+    setEnhancedImage(null);
 
-      try {
-        // Simulate AI enhancement (Replace with actual API call)
-        const enhancedImage = reader.result;
-        setEnhancedImage(enhancedImage);
-      } catch (error) {
-        console.error("Error enhancing image:", error);
-        setEnhancedImage(null);
+    enhanceImage(file);
+  };
+
+  const enhanceImage = async (imageFile) => {
+    try {
+      const formData = new FormData();
+      formData.append("image_file", imageFile);
+
+      const uploadResponse = await axiosInstance.post(
+        "/api/tasks/visual/scale",
+        formData,
+        {
+          headers: {
+            "X-API-KEY": import.meta.env.VITE_X_API_KEY,
+          },
+        }
+      );
+
+      const taskId = uploadResponse.data.data.task_id;
+      if (!taskId) throw new Error("Failed to retrieve task ID");
+
+      console.log("Task ID:", taskId);
+
+      let enhancedImageUrl = null;
+      let attempts = 0;
+      const maxAttempts = 10;
+      const pollingInterval = 3000;
+
+      while (attempts < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, pollingInterval));
+
+        const statusResponse = await axiosInstance.get(
+          `/api/tasks/visual/scale/${taskId}`,
+          {
+            headers: {
+              "X-API-KEY": import.meta.env.VITE_X_API_KEY,
+            },
+          }
+        );
+
+        console.log("Task Status:", statusResponse.data);
+        const taskData = statusResponse.data.data;
+
+        if (taskData.progress === 100 && taskData.image) {
+          enhancedImageUrl = taskData.image;
+          break;
+        } else if (taskData.state < 0) {
+          throw new Error("Image enhancement failed.");
+        }
+
+        attempts++;
       }
-    };
 
-    reader.onerror = () => {
-      setError("Error reading file. Please try again.");
-    };
+      if (!enhancedImageUrl) {
+        throw new Error("Image enhancement took too long or failed.");
+      }
 
-    reader.readAsDataURL(file);
+      setEnhancedImage(enhancedImageUrl);
+      console.log("Enhanced Image URL:", enhancedImageUrl);
+    } catch (error) {
+      console.error("Error enhancing image:", error.response?.data || error);
+      setError("Error enhancing image. Please try again.");
+    }
   };
 
   return (
