@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ImageContext } from "../context/ImageContext";
 
 function Upload() {
   const inputRef = React.useRef(null);
+  const { setOriginalImage, setEnhancedImage } = useContext(ImageContext);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -12,6 +14,18 @@ function Upload() {
 
   const handleClick = () => {
     inputRef.current?.click();
+  };
+
+  const handleChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setOriginalImage(reader.result);
+        setEnhancedImage(null);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -35,6 +49,7 @@ function Upload() {
         className="hidden"
         id="file-upload"
         aria-labelledby="file-upload"
+        onChange={handleChange}
       />
     </div>
   );
