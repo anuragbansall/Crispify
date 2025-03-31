@@ -1,5 +1,5 @@
 import React from "react";
-import Preview from "./preview";
+import Preview from "./Preview";
 import Loading from "./Loading";
 import { useContext } from "react";
 import { ImageContext } from "../context/ImageContext";
