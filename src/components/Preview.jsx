@@ -16,19 +16,14 @@ function Preview({ image, alternativeText, tag = "original" }) {
               className="w-full h-full object-cover"
             />
             {tag === "enhanced" ? (
-              <button
+              <a
+                href={image}
+                download
+                aria-label="Download enhanced image"
                 className="absolute bottom-2 right-2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition duration-200"
-                onClick={() => {
-                  const link = document.createElement("a");
-                  link.href = image;
-                  link.download = "enhanced_image.png";
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                }}
               >
                 Download
-              </button>
+              </a>
             ) : null}
           </>
         ) : (
