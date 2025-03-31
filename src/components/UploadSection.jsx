@@ -5,10 +5,10 @@ import Loading from "./Loading";
 function UploadSection() {
   return (
     <div className="my-10">
-      <h2 className="text-2xl md:text-4xl mb-1 font-semibold text-center">
+      <h2 className="text-2xl md:text-4xl xl:text-5xl mb-2 font-semibold text-center">
         AI Image Enhancer
       </h2>
-      <p className="text-sm md:text-lg text-center text-zinc-500 dark:text-zinc-400 mb-5">
+      <p className="text-sm md:text-lg xl:text-xl text-center text-zinc-500 dark:text-zinc-400 mb-5">
         Upload your image and let AI enhance it for you.
       </p>
       <Upload />

@@ -29,7 +29,7 @@ function Upload() {
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-800 shadow-md rounded-lg p-6 w-full max-w-md mx-auto">
+    <div className="bg-white dark:bg-zinc-800 shadow-md rounded-lg p-6 xl:p-8 w-full max-w-md mx-auto">
       <label
         className="border-2 border-dashed border-gray-300 dark:border-zinc-600 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer focus-visible:ring focus-visible:ring-blue-500"
         tabIndex="0"

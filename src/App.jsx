@@ -15,7 +15,10 @@ function App() {
           <PreviewSection />
         </ImageProvider>
       </Container>
-      <Footer />
+
+      <div className="mt-auto">
+        <Footer />
+      </div>
     </div>
   );
 }
